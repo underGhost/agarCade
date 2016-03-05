@@ -1,0 +1,17 @@
+{
+  "manifest_version": 2,
+
+  "name": "AgarCade",
+  "description": "This extension gives you the Agar Arcade interface on their site.",
+  "version": "1.0",
+  "content_scripts": [
+    {
+      "matches": ["*://*.agar.io/*"],
+      "js": ["agarCade.js"],
+      "css" : ["app.css"]
+    }
+  ],
+  "permissions": [
+    "tabs", "http://agar.io/*"
+  ]
+}

@@ -1,0 +1,20 @@
+body {
+  background: red;
+}
+.tosBox {
+  display: none !important;
+}
+#setName {
+  position: relative;
+  padding: 1rem;
+  text-align: center;
+  z-index: 9999;
+  font-size: 35px;
+  background: #f6f6f6;
+}
+#setName #letters span {
+  margin-right: 1rem;
+}
+#setName #letters span.agar-selected {
+  border: 1px solid red;
+}

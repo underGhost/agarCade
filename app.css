@@ -1,16 +1,19 @@
 body {
-  background: red;
+  cursor: none;
 }
-.tosBox {
-  display: none !important;
+#overlays {
+  margin-left: -200% !important;
 }
 #setName {
-  position: relative;
+  position: absolute;
+  width: 100%;
+  bottom: 0;
   padding: 1rem;
   text-align: center;
   z-index: 9999;
   font-size: 35px;
   background: #f6f6f6;
+  display: none;
 }
 #setName #letters span {
   margin-right: 1rem;

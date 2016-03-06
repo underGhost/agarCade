@@ -5,7 +5,7 @@ var screenX = window.innerWidth;
 var screenY = window.innerHeight;
 
 // Remove agar info
-document.getElementById('helloContainer').style.display = 'none';
+// document.getElementById('helloContainer').style.display = 'none';
 
 // Add name UI
 function buildUI() {
@@ -15,63 +15,76 @@ function buildUI() {
   var letters = alphabet.split('').map(function(v, i) {
     return `<span ${i < 1 ? 'class="agar-selected"' : ''}>${v}</span>`;
   }).join('');
-  wrapper.innerHTML = `<div id="letters">${letters}<span>DEL</span><span>END</span></div><div id="chosenName"></div>`;
+  wrapper.innerHTML = `<div id="chosenName"></div><div id="letters">${letters}<span>DEL</span><span>END</span></div>`;
   return wrapper;
 }
 
 function selectLetter(direction) {
+  var letters = document.getElementById('letters');
   var selected = document.getElementsByClassName('agar-selected')[0];
+  selected.className = '';
   if(direction === 'left') {
     if(selected.previousSibling) {
-      selected.className = '';
       selected.previousSibling.className = 'agar-selected';
+    } else {
+      letters.lastChild.className = 'agar-selected';
     }
   } else if (direction === 'right') {
     if(selected.nextSibling) {
-      selected.className = '';
       selected.nextSibling.className = 'agar-selected';
+    } else {
+      letters.firstChild.className = 'agar-selected';
     }
   }
 }
 
-window.onload = function() {
   var nameUI = buildUI();
   var name = '';
-  document.body.insertBefore(nameUI, document.body.firstChild);
+  document.body.insertBefore(nameUI, document.body.lastChild.nextSibling);
 
   function mouseMoved(e) {
     var x = e.clientX;
-    var y = e.clientY;
+    var minX = screenX / 2 - 50;
+    var maxX = minX + 100;
     // Move left
-    if(x < (screenX / 2)) {
+    if(x < minX) {
       selectLetter('left');
     }
     // Move right
-    if(x > (screenX / 2)) {
+    if(x > maxX) {
       selectLetter('right');
     }
   }
 
-  function addLetter() {
-    var selected = document.getElementsByClassName('agar-selected')[0];
-    var text = selected.innerText;
-    if(text === 'END') {
-      var nick = document.getElementById('nick');
-      var submit = document.getElementsByClassName('btn-play-guest')[0];
-      nick.value = name;
-      submit.click();
-      document.getElementById('setName').style.display = 'none';
-      document.removeEventListener('mousemove', mouseMoved);
-      document.removeEventListener('click', addLetter);
-      return false;
-    } else if (text === 'DEL') {
-      console.log('Delete a letter');
-    } else {
-      name += text;
-      document.getElementById('chosenName').innerText = name;
+  function addLetter(e) {
+console.log('Adding Letter', e.keyCode);
+    if(e.keyCode === 32 && window.getComputedStyle(document.getElementById('setName')).display !== 'none') {
+      var selected = document.getElementsByClassName('agar-selected')[0];
+      var text = selected.innerText;
+      if(text === 'END') {
+        var nick = document.getElementById('nick');
+        var submit = document.getElementsByClassName('btn-play-guest')[0];
+        nick.value = name;
+        submit.click();
+      } else if (text === 'DEL') {
+        name = name.substr(0, name.length - 1);
+        document.getElementById('chosenName').innerText = name;
+      } else {
+        name += text;
+        document.getElementById('chosenName').innerText = name;
+      }
     }
   }
-  // Letter selection
+  
   document.addEventListener('mousemove', mouseMoved);
-  document.addEventListener('click', addLetter);
-}
+  document.addEventListener('keydown', addLetter);
+  
+  function checkGame() {
+    var overlays = document.getElementById('overlays');
+    var visible = window.getComputedStyle(overlays);
+    var setName = document.getElementById('setName');
+    setName.style.display = visible.display;
+  }
+
+  // Game check if playing or not
+  window.setInterval(checkGame, 500);

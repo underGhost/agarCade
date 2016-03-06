@@ -13,5 +13,9 @@
   ],
   "permissions": [
     "tabs", "http://agar.io/*"
+  ],
+  "web_accessible_resources": [
+    "*.mp3",
+    "*.wav"
   ]
 }

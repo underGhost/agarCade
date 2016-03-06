@@ -4,8 +4,20 @@ console.log('WELCOME TO THE AGAR-CADE!');
 var screenX = window.innerWidth;
 var screenY = window.innerHeight;
 
-// Remove agar info
-// document.getElementById('helloContainer').style.display = 'none';
+// Game Audio
+var gameAudio = new Audio();
+var soundAudio = new Audio();
+function setGameAudio(file) {
+  gameAudio.src = chrome.extension.getURL(file);
+  gameAudio.loop = true;
+  gameAudio.play();
+}
+
+function playClip(file) {
+  soundAudio.pause();
+  soundAudio.src = chrome.extension.getURL(file);
+  soundAudio.play();
+}
 
 // Add name UI
 function buildUI() {
@@ -57,7 +69,6 @@ function selectLetter(direction) {
   }
 
   function addLetter(e) {
-console.log('Adding Letter', e.keyCode);
     if(e.keyCode === 32 && window.getComputedStyle(document.getElementById('setName')).display !== 'none') {
       var selected = document.getElementsByClassName('agar-selected')[0];
       var text = selected.innerText;
@@ -73,16 +84,30 @@ console.log('Adding Letter', e.keyCode);
         name += text;
         document.getElementById('chosenName').innerText = name;
       }
+    } else if (e.keyCode === 32 && window.getComputedStyle(document.getElementById('setName')).display === 'none') {
+      // In Game
+      playClip('split.wav');
+    } else if (e.keyCode === 87) {
+      playClip('food.wav');
     }
   }
-  
+
   document.addEventListener('mousemove', mouseMoved);
   document.addEventListener('keydown', addLetter);
-  
+
   function checkGame() {
     var overlays = document.getElementById('overlays');
     var visible = window.getComputedStyle(overlays);
     var setName = document.getElementById('setName');
+    if(visible.display === 'none') {
+      if(chrome.extension.getURL('game.mp3') !== gameAudio.src) {
+        setGameAudio('game.mp3');
+      }
+    } else {
+      if(chrome.extension.getURL('intro.mp3') !== gameAudio.src) {
+        setGameAudio('intro.mp3');
+      }
+    }
     setName.style.display = visible.display;
   }
 

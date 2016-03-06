@@ -85,9 +85,8 @@ function selectLetter(direction) {
         document.getElementById('chosenName').innerText = name;
       }
     } else if (e.keyCode === 32 && window.getComputedStyle(document.getElementById('setName')).display === 'none') {
-      // In Game
       playClip('split.wav');
-    } else if (e.keyCode === 87) {
+    } else if (e.keyCode === 87 && window.getComputedStyle(document.getElementById('setName')).display === 'none') {
       playClip('food.wav');
     }
   }

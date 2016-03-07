@@ -16,6 +16,8 @@
   ],
   "web_accessible_resources": [
     "*.mp3",
-    "*.wav"
+    "*.wav",
+    "logo.png",
+    "*.ttf"
   ]
 }

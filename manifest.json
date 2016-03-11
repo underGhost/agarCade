@@ -18,6 +18,7 @@
     "*.mp3",
     "*.wav",
     "logo.png",
-    "*.ttf"
+    "*.ttf",
+    "background.js"
   ]
 }

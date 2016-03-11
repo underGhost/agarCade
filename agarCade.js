@@ -1,23 +1,33 @@
 console.log('WELCOME TO THE AGAR-CADE!');
 
+//Inject to talk to Agar dom
+function injectScript(file, node) {
+  var th = document.getElementsByTagName(node)[0];
+  var s = document.createElement('script');
+  s.setAttribute('type', 'text/javascript');
+  s.setAttribute('src', file);
+  th.appendChild(s);
+}
+
+injectScript(chrome.extension.getURL('background.js'), 'body');
+
+
 // Window Size
 var screenX = window.innerWidth;
-var screenY = window.innerHeight;
+// var screenY = window.innerHeight;
 var gameStarted = false;
 
 // Game Audio
 var gameAudio = new Audio();
 var soundAudio = new Audio();
-function setGameAudio(file) {
+function playClip(file, loop) {
   gameAudio.src = chrome.extension.getURL(file);
-  gameAudio.loop = true;
+  gameAudio.loop = loop;
   gameAudio.play();
 }
 
-function playClip(file) {
-  soundAudio.pause();
-  soundAudio.src = chrome.extension.getURL(file);
-  soundAudio.play();
+function inGame() {
+  return window.getComputedStyle(document.getElementById('setName')).display === 'none';
 }
 
 // Add name UI
@@ -61,28 +71,27 @@ function selectLetter(direction) {
   document.body.insertBefore(startScreen, document.body.lastChild.nextSibling);
 
   function mouseMoved(e) {
-    var x = e.clientX;
-    var minX = screenX / 2 - 50;
-    var maxX = minX + 100;
-    // Move left
-    if(x < minX) {
-      selectLetter('left');
-    }
-    // Move right
-    if(x > maxX) {
-      selectLetter('right');
+    if(!inGame()) {
+      var x = e.clientX;
+      var minX = screenX / 2 - 50;
+      var maxX = minX + 100;
+      // Move left
+      if(x < minX) {
+        selectLetter('left');
+      }
+      // Move right
+      if(x > maxX) {
+        selectLetter('right');
+      }
     }
   }
 
   function addLetter(e) {
-    if(e.keyCode === 32 && window.getComputedStyle(document.getElementById('setName')).display !== 'none') {
+    if(e.keyCode === 32 && !inGame()) {
       var selected = document.getElementsByClassName('agar-selected')[0];
       var text = selected.innerText;
       if(text === 'END') {
-        var nick = document.getElementById('nick');
-        var submit = document.getElementsByClassName('btn-play-guest')[0];
-        nick.value = name;
-        submit.click();
+        window.postMessage({command: 'updateName', name: name}, location.origin);
       } else if (text === 'DEL') {
         name = name.substr(0, name.length - 1);
         document.getElementById('chosenName').innerText = name;
@@ -90,10 +99,10 @@ function selectLetter(direction) {
         name += text;
         document.getElementById('chosenName').innerText = name;
       }
-    } else if (e.keyCode === 32 && window.getComputedStyle(document.getElementById('setName')).display === 'none') {
-      playClip('split.wav');
-    } else if (e.keyCode === 87 && window.getComputedStyle(document.getElementById('setName')).display === 'none') {
-      playClip('food.wav');
+    } else if (e.keyCode === 32 && !inGame()) {
+      playClip('split.wav', false);
+    } else if (e.keyCode === 87 && inGame()) {
+      playClip('food.wav', false);
     } else if (e.keyCode === 81) {
       document.getElementById('insertCoin').style.display = 'none';
       document.getElementById('setName').style.display = 'block';
@@ -127,11 +136,11 @@ function selectLetter(direction) {
     var startScreen = document.getElementById('startScreen');
     if(visible.display === 'none') {
       if(chrome.extension.getURL('game.mp3') !== gameAudio.src) {
-        setGameAudio('game.mp3');
+        playClip('game.mp3', true);
       }
     } else {
       if(chrome.extension.getURL('intro.mp3') !== gameAudio.src) {
-        setGameAudio('intro.mp3');
+        playClip('intro.mp3', true);
       }
     }
     if(gameStarted) {

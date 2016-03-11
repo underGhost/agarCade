@@ -3,7 +3,7 @@
   src: url('chrome-extension://__MSG_@@extension_id__/ka1.ttf');
 }
 body {
-  cursor: none;
+  /*cursor: none;*/
   font-family: 'ka1', cursive !important;
 }
 .tosBox.right {
